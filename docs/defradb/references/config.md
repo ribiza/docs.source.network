@@ -1,131 +1,184 @@
 ---
-sidebar_label: Config
+sidebar_label: Configuration settings
 sidebar_position: 1
 ---
 
 # DefraDB configuration (YAML)
 
-The default DefraDB directory is `$HOME/.defradb`. It can be changed via the --rootdir CLI flag.
+DefraDB's configuration file is called `config.yaml` and located within DefraDB root directory.
 
-Relative paths are interpreted as being rooted in the DefraDB directory.
+The default root directory is `$HOME/.defradb`. It can be changed via the `--rootdir` CLI flag when starting a node with `defradb start`.
 
-## `development`
+::::tip
 
-Enables a set of features that make development easier but should not be enabled in production.
+Relative paths in config settings are interpreted as relative to the DefraDB root directory.
 
-## `datastore.store`
+::::
 
-Store can be badger or memory. Defaults to `badger`.
+## `api.address` {/* #apiaddress */}
 
-- badger: fast pure Go key-value store optimized for SSDs (https://github.com/dgraph-io/badger)
-- memory: in-memory version of badger
+Address of the HTTP API to listen on or connect to. Default: `127.0.0.1:9181`.
 
-## `datastore.maxtxnretries`
+## `api.allowed-origins` {/* #apiallowed-origins */}
 
-The number of retries to make in the event of a transaction conflict. Defaults to `5`.
+List of origins a cross-domain request can be executed from.
 
-Currently this is only used within the P2P system and will not affect operations initiated by users.
+## `api.pubkeypath` {/* #apipubkeypath */}
 
-## `datastore.noencryption`
+Path to the public key file for TLS / HTTPS.
 
-Skip generating an encryption key. Encryption at rest will be disabled. **WARNING**: This cannot be undone.
+## `api.privkeypath` {/* #apiprivkeypath */}
 
-## `datastore.badger.path`
+Path to the private key file for TLS / HTTPS.
 
-The path to the database data file(s). Defaults to `data`.
+## `datastore.badger.path` {/* #datastorebadgerpath */}
 
-## `datastore.badger.valuelogfilesize`
+Path to the database data files. Default: `data`.
 
-Maximum file size of the value log files.
+## `datastore.badger.valuelogfilesize` {/* #datastorebadgervaluelogfilesize */}
 
-## `api.address`
+Maximum file size of the value log files. Default: `2^30`.
 
-Address of the HTTP API to listen on or connect to. Defaults to `127.0.0.1:9181`.
+## `datastore.defaultkeytype` {/* #datastoredefaultkeytype */}
 
-## `api.allowed-origins`
+Key type for `node-identity-key`: either `secp256k1` or `ed25519`. Default: `secp256k1`.
 
-The list of origins a cross-domain request can be executed from.
+See [Keys](./keys.md).
 
-## `api.pubkeypath`
+## `datastore.maxtxnretries` {/* #datastoremaxtxnretries */}
 
-The path to the public key file for TLS / HTTPS.
+Number of retries to make in the event of a transaction conflict. Default: `5`.
 
-## `api.privkeypath`
+This is only used within the P2P system and does not affect operations initiated by users.
 
-The path to the private key file for TLS / HTTPS.
+## `datastore.noencryption` {/* #datastorenoencryption */}
 
-## `net.p2pdisabled`
+Whether to skip generating an encryption key and disable encryption at rest. Default: `false`.
 
-Whether P2P networking is disabled. Defaults to `false`.
+::::warning
 
-## `net.p2paddresses`
+The value of this option cannot be changed after the instance is started for the first time.
 
-List of addresses for the P2P network to listen on. Defaults to `/ip4/127.0.0.1/tcp/9171`.
+::::
 
-## `net.pubsubenabled`
+## `datastore.nosearchableencryption` {/* #datastorenosearchableencryption */}
 
-Whether PubSub is enabled. Defaults to `true`.
+Whether to skip generating a searchable encryption key and disable searchable encryption. Default: `false`.
 
-## `net.peers`
+## `datastore.nosigning` {/* #datastorenosigning */}
 
-List of peers to boostrap with, specified as multiaddresses.
+Whether to skip signing new blocks.
 
-https://docs.libp2p.io/concepts/addressing/
+::::warning
 
-## `net.relay`
+The value of this option cannot be changed after the instance is started for the first time.
 
-Enable libp2p's Circuit relay transport protocol. Defaults to `false`.
+::::
 
-https://docs.libp2p.io/concepts/circuit-relay/
+## `datastore.store` {/* #datastorestore */}
 
-## `log.level`
+Store mode. Options are:
 
-Log level to use. Options are `info` or `error`. Defaults to `info`.
+- `badger`: fast pure Go key-value store optimized for SSDs (https://github.com/dgraph-io/badger).
+- `memory`: in-memory version of `badger`.
 
-## `log.output`
+Default: `badger`.
 
-Log output path. Options are `stderr` or `stdout`. Defaults to `stderr`.
+## `development` {/* #development */}
 
-## `log.format`
+Enables a set of features that facilitates development but should not be enabled in production:
 
-Log format to use. Options are `text` or `json`. Defaults to `text`.
+- allows purging of all persisted data
+- generates temporary node identity if one doesn't exist in the keyring
 
-## `log.stacktrace`
+Default: `false`.
 
-Include stacktrace in error and fatal logs. Defaults to `false`.
+## `log.colordisabled` {/* #logcolordisabled */}
 
-## `log.source`
+Whether to disable colored log output. Default: `false`.
 
-Include source location in logs. Defaults to `false`.
+## `log.format` {/* #logformat */}
 
-## `log.overrides`
+Log format to use. Options are `text` or `json`. Default: `text`.
 
-Logger config overrides. Format `<name>,<key>=<val>,...;<name>,...`.
+## `log.level` {/* #loglevel */}
 
-## `log.colordisabled`
+Log level to use. Options are `info` or `error`. Default: `info`.
 
-Disable colored log output. Defaults to `false`.
+## `log.output` {/* #logoutput */}
 
-## `keyring.path`
+Log output stream. Options are `stderr` or `stdout`. Default: `stderr`.
 
-Path to store encrypted key files in. Defaults to `keys`.
+## `log.overrides` {/* #logoverrides */}
 
-## `keyring.disabled`
+Logger config overrides. Format
 
-Disable the keyring and generate ephemeral keys instead. Defaults to `false`.
+```format title="Logger config overrides format"
+<name>,<key>=<val>,...;<name>,...
+```
 
-## `keyring.namespace`
+## `log.source` {/* #logsource */}
 
-The service name to use when using the system keyring. Defaults to `defradb`.
+Include a partial stacktrace in logs. Default: `true`.
 
-## `keyring.backend`
+## `log.stacktrace` {/* #logstacktrace */}
 
-Keyring backend to use. Defaults to `file`.
+Whether to include the stacktrace in error and fatal log entries. Default: `false`.
 
-- `file` Stores keys in encrypted files
-- `system` Stores keys in the OS managed keyring
+## `net.p2paddresses` {/* #netp2paddresses */}
 
-## `lens.runtime`
+List of addresses for the P2P network to listen on. Default: `[/ip4/127.0.0.1/tcp/9171]`.
+
+## `net.p2pdisabled` {/* #netp2pdisabled */}
+
+Whether P2P networking is disabled. Default: `false`.
+
+## `net.peers` {/* #netpeers */}
+
+List of peers to bootstrap with, specified as [multiaddresses](https://docs.libp2p.io/concepts/addressing/).
+
+## `net.pubsubenabled` {/* #netpubsubenabled */}
+
+Whether PubSub is enabled. Default: `true`.
+
+## `net.relay` {/* #netrelay */}
+
+Whether libp2p's [Circuit relay transport protocol](https://docs.libp2p.io/concepts/circuit-relay/) is enabled. Default: `false`.
+
+## `keyring.backend` {/* #keyringbackend */}
+
+Keyring backend to use. Options are:
+
+- `file`: Store keys in encrypted files
+- `system`: Store keys in the OS-managed keyring
+
+Default: `file`.
+
+## `keyring.disabled` {/* #keyringdisabled */}
+
+Whether to disable the keyring and generate ephemeral keys instead. Default: `false`.
+
+## `keyring.namespace` {/* #keyringnamespace */}
+
+Service name to use when using the system keyring. Default: `defradb`.
+
+## `keyring.path` {/* #keyringpath */}
+
+Path to store encrypted key files in. Default: `keys`.
+
+## `replicator.retryintervals` {/* #replicatorretryintervals */}
+
+List of durations (in seconds) to wait before retrying a failed replication attempt. Default: `[30, 60, 120, 240, 480, 960, 1920]`.
+
+## `secretfile` {/* #secretfile */}
+
+Path to the file containing secrets. Default: `.env`.
+
+## `telemetry.disabled` {/* #telemetrydisabled */}
+
+Whether to disable telemetry. Default: `false`.
+
+## `lens.runtime` {/* #lensruntime */}
 
 The LensVM wasm runtime to run lens modules in.
 
@@ -134,38 +187,32 @@ Possible values:
 - `wasmer` (windows not supported): https://github.com/wasmerio/wasmer-go
 - `wazero`: https://github.com/tetratelabs/wazero
 
-## `acp.type`
+## `acp.document.type` {/* #acpdocumenttype */}
 
-The type of ACP module to use.
+Type of Access Control Policy module to use. Options are:
 
-Possible values:
-- `none` (default): No ACP
-- `local` local-only ACP
-- `source-hub` source hub ACP: https://github.com/sourcenetwork/sourcehub
+- `none`: Disabled
+- `local`: Local-only ACP
+- `source-hub`: [SourceHub ACP](https://github.com/sourcenetwork/sourcehub)
 
-## `acp.sourceHub.ChainID`
+Default: `none`.
 
-The ID of the SourceHub chain to store ACP data in. Required when using `acp.type`:`source-hub`.
+## `acp.document.sourceHub.ChainID` {/* #acpdocumentsourcehubchainid */}
 
-## `acp.sourceHub.GRPCAddress`
+The ID of the SourceHub chain to store ACP data in. Required when using `acp.document.type`:`source-hub`.
 
-The address of the SourceHub GRPC server. Required when using `acp.type`:`source-hub`.
+## `acp.document.sourceHub.GRPCAddress` {/* #acpdocumentsourcehubgrpcaddress */}
 
-## `acp.sourceHub.CometRPCAddress`
+The address of the SourceHub GRPC server. Required when using `acp.document.type`:`source-hub`.
 
-The address of the SourceHub Comet RPC server. Required when using `acp.type`:`source-hub`.
+## `acp.document.sourceHub.CometRPCAddress` {/* #acpdocumentsourcehubcometrpcaddress */}
 
-## `acp.sourceHub.KeyName`
+The address of the SourceHub Comet RPC server. Required when using `acp.document.type`:`source-hub`.
 
-The name of the key in the keyring where the SourceHub credentials used to sign (and pay for) SourceHub
-transactions created by the node is stored. Required when using `acp.type`:`source-hub`.
+## `acp.docyment.sourceHub.KeyName` {/* #acpdocymentsourcehubkeyname */}
 
-## `acp.sourceHub.address`
+The name of the key in the keyring containing the SourceHub credentials used to sign (and pay for) SourceHub transactions created by the node. Required when using `acp.document.type`:`source-hub`.
 
-The SourceHub address of the actor that client-side actions should permit to make SourceHub actions on
-their behalf.  This is a client-side only config param.  It is required if the client wishes to make
-SourceHub ACP requests in order to create protected data.
+## `acp.document.sourceHub.address` {/* #acpdocumentsourcehubaddress */}
 
-## `secretfile`
-
-Path to the file containing secrets. Defaults to `.env`.
+The SourceHub address of the actor that client-side actions should permit to make SourceHub actions on their behalf. This is a client-side only config param. It is required if the client wishes to make SourceHub ACP requests in order to create protected data.

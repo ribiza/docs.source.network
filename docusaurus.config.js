@@ -5,8 +5,8 @@ const variableCodeTheme = require("./src/code-theme/code-theme");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Source Developer Portal",
-  tagline: "The Home of Source Developers",
+  title: "Source Docs",
+  tagline: "The Source Stack Documentation",
   url: "https://docs.source.network",
   baseUrl: "/",
   onBrokenLinks: "warn",
@@ -23,6 +23,17 @@ const config = {
         api: {
           path: "openapi.yml",
           routeBasePath: "/sourcehub/api",
+        },
+        docs: false, // Disable the default docs plugin
+        proxy: false, // Disable the proxy plugin to avoid webpack-dev-server config errors
+        theme: {
+          customCss: require.resolve("./src/css/custom.scss"),
+        },
+      },
+      {
+        api: {
+          path: "docs/defradb/references/http/openapi.json",
+          routeBasePath: "/defradb/references/http/api",
         },
         docs: false, // Disable the default docs plugin
         proxy: false, // Disable the proxy plugin to avoid webpack-dev-server config errors
@@ -101,7 +112,7 @@ const config = {
       },
       footer: {
         logo: {
-          alt: "Facebook Open Source Logo",
+          alt: "Source Logo",
           src: "img/source-logo_v2.svg",
           srcDark: "img/source-logo-w_v2.svg",
           href: "https://source.network",
@@ -111,7 +122,7 @@ const config = {
             title: "Developers",
             items: [
               {
-                label: "Getting Started",
+                label: "Documentation",
                 to: "/",
               },
               {
@@ -151,6 +162,23 @@ const config = {
       },
       prism: {
         theme: variableCodeTheme,
+        additionalLanguages: ['http'],
+        magicComments: [
+          // Remember to extend the default highlight class name as well!
+          {
+            className: 'theme-code-block-highlighted-line',
+            line: 'highlight-next-line',
+            block: { start: 'highlight-start', end: 'highlight-end' },
+          },
+          {
+            className: 'code-block-invalid-line',
+            line: 'invalid',
+          },
+          {
+            className: 'code-block-valid-line',
+            line: 'valid',
+          },
+        ],
       },
       algolia: {
         appId: "N3M9YBYYQY",
@@ -184,18 +212,19 @@ const config = {
         id: "defradb",
         path: "docs/defradb",
         routeBasePath: "defradb",
-        sidebarPath: require.resolve("./sidebars.js"),
+        sidebarPath: require.resolve("./docs/sidebars/defra.js"),
         editUrl:
           "https://github.com/sourcenetwork/docs.source.network/edit/master/",
-        lastVersion: "0.19.0",
+        lastVersion: "current",
         versions: {
           "0.19.0": {
-            banner: "none",
+            banner: "unmaintained",
+          },
+          "0.20.0": {
+            banner: "unmaintained",
           },
           current: {
-            label: "Next",
-            path: "next",
-            banner: "unreleased",
+            label: "1.0 RC1 (Latest)"
           },
         },
         // Reorder changelog sidebar
